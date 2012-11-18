@@ -1,9 +1,17 @@
 = pwsqr
 
-Description goes here.
+This gem helps you securely and easily copy passwords from terminal pws tool, to your mobile devices using QR codes.
+
+PWS gem (https://github.com/janlelis/pws) is required to use this tool and will be installed as dependency if you doesn't has one already.
+
+By default pwsqr works offline and trying to use onetimesecret.com service to store your password privately behind QR code with short URL.
+To use this feature, run pwsqr with '$ pwsqr init' command first and setup your email and API key in newly generated config
+file in your $HOME directory: ~/.pwsqr
+
+For more options run '$ pwsqr --help' command.
 
 == Contributing to pwsqr
- 
+
 * Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet.
 * Check out the issue tracker to make sure someone already hasn't requested it and/or contributed it.
 * Fork the project.

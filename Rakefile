@@ -17,10 +17,11 @@ Jeweler::Tasks.new do |gem|
   gem.name = "pwsqr"
   gem.homepage = "http://github.com/smileart/pwsqr"
   gem.license = "MIT"
-  gem.summary = %Q{TODO: one-line summary of your gem}
-  gem.description = %Q{TODO: longer description of your gem}
+  gem.summary = %Q{Simple QR interface to pws gem, to easily use your passwords on a smartphone!}
+  gem.description = %Q{This gem helps you securely and easily copy passwords from terminal pws tool, to your mobile devices using QR codes.}
   gem.email = "smileart21@gmail.com"
   gem.authors = ["Smile @rT"]
+  gem.executables = ["pwsqr"]
   # dependencies defined in Gemfile
 end
 Jeweler::RubygemsDotOrgTasks.new

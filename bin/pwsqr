@@ -1,0 +1,84 @@
+#! /usr/bin/env ruby
+#! coding = utf-8
+
+require 'clamp'
+require 'clipboard'
+require 'optimism'
+require 'awesome_print'
+require 'yaml'
+
+
+class PwsQrCommand < Clamp::Command
+
+  parameter "key", "the key password sotred on"
+  option ["--offline", "--local", "-o"], :flag, "force local password usage (disable onetimesecret if configured)\n" +
+                            "WARNING: be careful using this option and remember to reset your terminal output history"
+  option ["-e", "--email"], :flag, "generates onetimesecret URL and also send it to your account"
+  option ["-n", "--namespace"], "NAMESPACE", "selects pws namespace to get password from it"
+
+  PATH = ENV['HOME']+"/.pwsqr"
+
+  if(File.exists?(PATH))
+    CONFIG = YAML.load_file(PATH) unless defined? CONFIG
+  else
+    config = {onetime:{email:'', api_key:''}, url_shortening:{url:'http://clck.ru/--?url='}}
+
+    File.open(PATH, "w") do |f|
+      f.write(config.to_yaml)
+    end
+
+    if ARGV[0] == 'init'
+      puts "  pwsqr config generated in your home folder: #{PATH}\n"
+      puts "  In order to use pwsqr online, please create your account here https://onetimesecret.com/signup\n"
+      puts "  end setup your settings in that config file. Thanks! ◕ ◡ ◕ \n"
+      exit
+    end
+  end
+
+  self.description = %{
+  ======================================================
+     Command line QR tool for PWS gem…
+  ======================================================
+  }
+
+  def execute
+
+    if(!namespace.nil?)
+      ns = " -#{namespace} "
+    else
+      ns = " "
+    end
+
+    backup = Clipboard.paste
+
+    if(system("pws#{ns}get #{key} 0"))
+      if(defined?(CONFIG) && !CONFIG[:onetime][:email].empty? && !offline?)
+        require 'open-uri'
+        require 'onetime/api'
+
+        api = Onetime::API.new CONFIG[:onetime][:email], CONFIG[:onetime][:api_key]
+
+        options = {
+          :secret => Clipboard.paste,
+          :ttl => 7200
+        }
+
+        options[:recipient] = CONFIG[:onetime][:email] if email?
+
+        secret = api.post '/share', options
+        url = 'https://onetimesecret.com/secret/' + secret['secret_key']
+
+        short_url =  open(CONFIG[:url_shortening][:url]+url).read
+        system("qrcli #{short_url}")
+      else
+        require 'open3'
+        Open3.popen3("qrcli", Clipboard.paste) { |i, o| puts o.read }
+      end
+
+      Clipboard.copy(backup)
+    end
+
+  end
+end
+
+PwsQrCommand.run
