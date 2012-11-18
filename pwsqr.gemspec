@@ -27,6 +27,7 @@ Gem::Specification.new do |s|
     "VERSION",
     "bin/pwsqr",
     "lib/pwsqr.rb",
+    "pwsqr.gemspec",
     "test/helper.rb",
     "test/test_pwsqr.rb"
   ]
