@@ -1,12 +1,10 @@
 source "http://rubygems.org"
 
-group :production do
-  gem "clipboard"
-  gem "clamp"
-  gem "onetime"
-  gem "qrcli"
-  gem "pws"
-end
+gem "clipboard"
+gem "clamp"
+gem "onetime"
+gem "qrcli"
+gem "pws"
 
 group :development do
   gem "shoulda", ">= 0"

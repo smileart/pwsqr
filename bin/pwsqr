@@ -3,10 +3,7 @@
 
 require 'clamp'
 require 'clipboard'
-require 'optimism'
-require 'awesome_print'
 require 'yaml'
-
 
 class PwsQrCommand < Clamp::Command
 
