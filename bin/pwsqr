@@ -7,13 +7,13 @@ require 'yaml'
 
 class PwsQrCommand < Clamp::Command
 
-  parameter "key", "the key password sotred on"
-  option ["--offline", "--local", "-o"], :flag, "force local password usage (disable onetimesecret if configured)\n" +
-                            "WARNING: be careful using this option and remember to reset your terminal output history"
-  option ["-e", "--email"], :flag, "generates onetimesecret URL and also send it to your account"
-  option ["-n", "--namespace"], "NAMESPACE", "selects pws namespace to get password from it"
+  parameter 'key', 'the key password sotred on'
+  option ['--offline', '--local', '-o'], :flag, "force local password usage (disable onetimesecret if configured)\n" +
+                            'WARNING: be careful using this option and remember to reset your terminal output history'
+  option ['-e', '--email'], :flag, 'generate onetimesecret URL and send it to your account'
+  option ['-n', '--namespace'], 'NAMESPACE', 'select pws namespace to get password from it'
 
-  PATH = ENV['HOME']+"/.pwsqr"
+  PATH = ENV['HOME']+'/.pwsqr'
 
   if(File.exists?(PATH))
     CONFIG = YAML.load_file(PATH) unless defined? CONFIG
@@ -34,12 +34,11 @@ class PwsQrCommand < Clamp::Command
 
   self.description = %{
   ======================================================
-     Command line QR tool for PWS gem…
+     Command-line QR tool for PWS gem…
   ======================================================
   }
 
   def execute
-
     if(!namespace.nil?)
       ns = " -#{namespace} "
     else

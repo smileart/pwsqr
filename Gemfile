@@ -1,17 +1,17 @@
-source "http://rubygems.org"
+source 'http://rubygems.org'
 
-gem "clipboard"
-gem "clamp"
-gem "onetime"
-gem "qrcli"
-gem "pws"
+gem 'pws'
+gem 'clipboard'
+gem 'qrcli'
+gem 'onetime'
+gem 'clamp'
 
 group :development do
-  gem "shoulda", ">= 0"
-  gem "rdoc", "~> 3.12"
-  gem "bundler", "> 1.0.0"
-  gem "jeweler", "~> 1.8.4"
-  gem "simplecov", ">= 0"
-  gem "rcov"
-  gem "awesome_print"
+  gem 'rake'
+  gem 'rdoc'
+  gem 'bundler'
+  gem 'simplecov'
+  gem 'letters'
+  gem 'byebug'
+  gem 'gitignore'
 end
