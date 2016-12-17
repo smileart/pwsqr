@@ -4,7 +4,7 @@ gem 'pws'
 gem 'clipboard'
 gem 'qrcli'
 gem 'onetime'
-gem 'clamp'
+gem 'docopt'
 
 group :development do
   gem 'rake'

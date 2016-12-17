@@ -1,0 +1,67 @@
+#! /usr/bin/env ruby
+
+require 'docopt'
+require 'clipboard'
+require 'yaml'
+require 'logger'
+
+require_relative '../lib/pwsqr.rb'
+
+# 🚧 🚧 🚧 🚧 🚧 🚧 🚧 🚧 🚧 ☢️ UNDER CONSTRUCTION! ☢️ 🚧 🚧 🚧 🚧 🚧 🚧 🚧 🚧 🚧
+
+class PwsQR
+  DOCOPT = <<~DOC
+    ======================================================
+            Command-line QR tool for PWS gem 📲
+    ======================================================
+
+    Usage:
+      pwsqr [--offline| --email <email>] [--namespace <namespace>] <key>
+      pwsqr --version
+      pwsqr --help
+      pwsqr --init
+
+    Options:
+      --version, -v                              Show the current app version
+      --help, -h                                 Show this screen
+      --init                                     Initialise new configuration
+      --namespace <namespace>, -n <namespace>    Use custom pws namespace
+      --offline, -o                              Force local password usage (disable OneTimeSecret if configured)
+      --email <email>, -e <email>                Generate OneTimeSecret URL and send it to your account
+  DOC
+
+  def initialize(logger_class, logger_device, logger_level)
+    @logger = logger_class.new(logger_device)
+    @logger.level = logger_level
+  end
+
+  def run
+    @docopt = Docopt.docopt(DOCOPT)
+
+    version if @docopt['--version']
+    init if @docopt['--init']
+    pwsqr if @docopt['<key>']
+
+  rescue Docopt::Exit => e
+    puts e.message
+  end
+
+  private
+
+  def pwsqr
+    @docopt.o
+  end
+
+  def init
+    puts 'Initialising configuration…'
+  end
+
+  def version
+    puts "PWSQR v.#{PwsQrEnv::VERSION}"
+    exit
+  end
+end
+
+LOGGER_LEVEL = PwsQrEnv::DEBUG ? PwsQrEnv::DEBUG : Logger::UNKNOWN
+app = PwsQR.new(Logger, STDOUT, LOGGER_LEVEL)
+app.run
