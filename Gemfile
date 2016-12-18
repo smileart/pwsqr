@@ -5,10 +5,10 @@ gem 'clipboard'
 gem 'qrcli'
 gem 'onetime'
 gem 'docopt'
+gem 'colorize'
 
 group :development do
   gem 'rake'
-  gem 'rdoc'
   gem 'bundler'
   gem 'simplecov'
   gem 'letters'

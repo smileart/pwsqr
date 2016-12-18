@@ -4,22 +4,29 @@ require 'docopt'
 require 'clipboard'
 require 'yaml'
 require 'logger'
+require 'open3'
+require 'colorize'
+require 'open-uri'
+require 'onetime/api'
 
 require_relative '../lib/pwsqr.rb'
 
 # 🚧 🚧 🚧 🚧 🚧 🚧 🚧 🚧 🚧 ☢️ UNDER CONSTRUCTION! ☢️ 🚧 🚧 🚧 🚧 🚧 🚧 🚧 🚧 🚧
 
 class PwsQR
+
+  attr_reader :clipboard_backup
+
   DOCOPT = <<~DOC
     ======================================================
             Command-line QR tool for PWS gem 📲
     ======================================================
 
     Usage:
-      pwsqr [--offline| --email <email>] [--namespace <namespace>] <key>
-      pwsqr --version
-      pwsqr --help
-      pwsqr --init
+      #{PwsQrEnv::NAME} [--offline| --email <email>] [--namespace <namespace>] <key>
+      #{PwsQrEnv::NAME} --version
+      #{PwsQrEnv::NAME} --help
+      #{PwsQrEnv::NAME} --init
 
     Options:
       --version, -v                              Show the current app version
@@ -27,8 +34,31 @@ class PwsQR
       --init                                     Initialise new configuration
       --namespace <namespace>, -n <namespace>    Use custom pws namespace
       --offline, -o                              Force local password usage (disable OneTimeSecret if configured)
-      --email <email>, -e <email>                Generate OneTimeSecret URL and send it to your account
+      --email <email>, -e <email>                Generate OneTimeSecret URL and send it to someones
   DOC
+
+  CONFIG_PATH = "#{Dir.home}/.#{PwsQrEnv::NAME}".freeze
+
+  CONFIG_DEFAULTS = {
+    onetime: {
+      email: nil,
+      api_key: nil
+    },
+    url_shortening: {
+      url:'https://clck.ru/--?url='
+    }
+  }.freeze
+
+  ONETIME_URL = 'https://onetimesecret.com/signup'.blue.freeze
+
+  INITDOC = <<-INITDOC
+    Initialising configuration… #{CONFIG_PATH.yellow}
+
+    In order to use pwsqr online, please create your account here: #{ONETIME_URL}
+    and setup your settings in #{CONFIG_PATH.yellow} config file. Thanks! >^.^<
+
+    If you really wanted to use it offline — run the command with `--offline` flag!
+  INITDOC
 
   def initialize(logger_class, logger_device, logger_level)
     @logger = logger_class.new(logger_device)
@@ -36,10 +66,17 @@ class PwsQR
   end
 
   def run
+    @clipboard_backup = Clipboard.paste
+
     @docopt = Docopt.docopt(DOCOPT)
 
+    @docopt['--namespace'] = @docopt['--namespace'] ? "-#{@docopt['--namespace']}" : ''
+    @pws_command = "pws #{@docopt['--namespace']} get #{@docopt['<key>']} 0"
+
+    load_config
+
     version if @docopt['--version']
-    init if @docopt['--init']
+    init_config if @docopt['--init']
     pwsqr if @docopt['<key>']
 
   rescue Docopt::Exit => e
@@ -49,19 +86,90 @@ class PwsQR
   private
 
   def pwsqr
-    @docopt.o
+    if !is_config? || @docopt['--offline']
+      pws_offline
+    else
+      pws_online
+    end
   end
 
-  def init
-    puts 'Initialising configuration…'
+  def init_config
+    @config ||= CONFIG_DEFAULTS
+    File.open(CONFIG_PATH, "w").write(@config.to_yaml)
+
+    print INITDOC
+    exit
   end
 
   def version
-    puts "PWSQR v.#{PwsQrEnv::VERSION}"
+    puts "#{PwsQrEnv::NAME.upcase} v.#{PwsQrEnv::VERSION}"
+    exit
+  end
+
+  def load_config
+    if(File.exists?(CONFIG_PATH))
+      @config ||= YAML.load_file(CONFIG_PATH)
+    else
+      init_config
+    end
+  end
+
+  def is_config?
+    @config &&
+    @config[:onetime][:email] &&
+    @config[:onetime][:api_key] &&
+    !@config[:url_shortening][:url].empty?
+  end
+
+  def generate_qr(str)
+    result = nil
+    Open3.popen3("qrcli", str)  {|i,o,e,t|
+      result = o.read
+    }
+
+    result
+  end
+
+  def shorten_url(url)
+    open(@config[:url_shortening][:url]+url).read
+  end
+
+  def pws_offline
+    puts 'PWSQR works offline!'.red
+    exit unless system(@pws_command)
+    print generate_qr(Clipboard.paste)
+
+    exit
+  end
+
+  def pws_online
+    puts 'PWSQR works online!'.green
+    exit unless system(@pws_command)
+
+    # @TODO Handle all the API/networking errors
+    onetime_api = Onetime::API.new @config[:onetime][:email], @config[:onetime][:api_key]
+
+    options = { :secret => Clipboard.paste, :ttl => 7200 }
+    options[:recipient] = @config[:onetime][:email] if @config[:onetime][:email]
+
+    secret = onetime_api.post '/share', options
+
+    secret_url = 'https://onetimesecret.com/secret/' + secret['secret_key']
+
+    print generate_qr(shorten_url(secret_url))
+
     exit
   end
 end
 
+trap(:INT) do
+  exit
+end
+
 LOGGER_LEVEL = PwsQrEnv::DEBUG ? PwsQrEnv::DEBUG : Logger::UNKNOWN
-app = PwsQR.new(Logger, STDOUT, LOGGER_LEVEL)
-app.run
+begin
+  app = PwsQR.new(Logger, STDOUT, LOGGER_LEVEL)
+  app.run
+rescue SystemExit
+  Clipboard.copy(app.clipboard_backup)
+end
