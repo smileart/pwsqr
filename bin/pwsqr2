@@ -60,6 +60,12 @@ class PwsQR
     If you really wanted to use it offline — run the command with `--offline` flag!
   INITDOC
 
+  ERROR_MESSAGES = {
+    onetime_wrong_response: 'One-Time Secret didn\'t respond properly!',
+    url_shortener_wrong_response: 'URL shortener didn\'t respond properly!',
+    network_error: 'Network error occurred (probably there is no internet connection)!'
+  }
+
   def initialize(logger_class, logger_device, logger_level)
     @logger = logger_class.new(logger_device)
     @logger.level = logger_level
@@ -81,6 +87,10 @@ class PwsQR
 
   rescue Docopt::Exit => e
     puts e.message
+  end
+
+  def error(message)
+    puts "ERROR: #{message}".red
   end
 
   private
@@ -123,6 +133,7 @@ class PwsQR
 
   def generate_qr(str)
     result = nil
+
     Open3.popen3("qrcli", str)  {|i,o,e,t|
       result = o.read
     }
@@ -131,6 +142,7 @@ class PwsQR
   end
 
   def shorten_url(url)
+    @config[:url_shortening][:url] = 'http://localhost:3333/--?url='
     open(@config[:url_shortening][:url]+url).read
   end
 
@@ -154,22 +166,47 @@ class PwsQR
 
     secret = onetime_api.post '/share', options
 
-    secret_url = 'https://onetimesecret.com/secret/' + secret['secret_key']
+    if secret && secret['secret_key']
+      secret_url = 'https://onetimesecret.com/secret/' + secret['secret_key']
+    else
+      fail OneTimeError, ERROR_MESSAGES[:onetime_wrong_response]
+    end
 
-    print generate_qr(shorten_url(secret_url))
+    short_url = shorten_url(secret_url)
+
+    if short_url && !short_url.empty?
+      print generate_qr(short_url)
+    else
+      fail UrlShorteningError, ERROR_MESSAGES[:url_shortener_wrong_response]
+    end
 
     exit
   end
 end
+
+class OneTimeError < StandardError; end
+class UrlShorteningError < StandardError; end
 
 trap(:INT) do
   exit
 end
 
 LOGGER_LEVEL = PwsQrEnv::DEBUG ? PwsQrEnv::DEBUG : Logger::UNKNOWN
+
 begin
   app = PwsQR.new(Logger, STDOUT, LOGGER_LEVEL)
   app.run
+rescue SocketError
+rescue Net::ReadTimeout
+rescue OpenURI::HTTPError => e
+  app.error PwsQR::ERROR_MESSAGES[:network_error]
+rescue JSON::ParserError => e
+  app.error PwsQR::ERROR_MESSAGES[:onetime_wrong_response]
+rescue UrlShorteningError => e
+  app.error PwsQR::ERROR_MESSAGES[:url_shortener_wrong_response]
+rescue OneTimeError => e
+  app.error e.message
 rescue SystemExit
+ensure
   Clipboard.copy(app.clipboard_backup)
 end
