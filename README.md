@@ -12,14 +12,23 @@ $ gem install pwsqr
 
 ## Usage
 
-This gem helps you securely and easily copy passwords from CLI (`pws` tool) to your mobile devices using QR codes.
+This gem helps you securely and easily copy/send passwords from CLI (`pws` tool) to your mobile devices using QR codes.
 
 By default pwsqr works offline and tries to use [onetimesecret.com](https://onetimesecret.com) service to store your password privately behind the QR code with a short URL.
+
 To use this feature, run pwsqr with `pwsqr init` command first and setup your email address and API key in the newly generated config file in your `$HOME` directory: `~/.pwsqr`
 
 ```sh
 $ pwsqr --help
 ```
+
+Then you check your email (if you used --email flag) or scan QR-code with any QR scaner (I use really fast one: [Optiscan QR Code Reader](https://itunes.apple.com/us/app/optiscan-qr-code-scanner-generator/id304099767) ⚠️ **this is not an advert**)
+
+## To-Do
+
+* ⚪️ Testing
+* ⚪️ Configure CI
+* ⚪️ Code documenting
 
 ## Contributing
 

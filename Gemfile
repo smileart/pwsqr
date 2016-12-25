@@ -9,6 +9,7 @@ gem 'colorize'
 
 group :development do
   gem 'rake'
+  gem 'reek'
   gem 'bundler'
   gem 'simplecov'
   gem 'letters'

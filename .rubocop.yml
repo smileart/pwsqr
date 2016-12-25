@@ -1,0 +1,17 @@
+# Use only ascii symbols in identifiers
+AsciiIdentifiers:
+  Enabled: true
+
+# Use only ascii symbols in comments
+AsciiComments:
+  Enabled: false
+
+# Limit lines to 150 characters
+LineLength:
+  Enabled: true
+  Max: 150
+
+# Limit class length to 150 LOC
+ClassLength:
+  Enabled: true
+  Max: 150
