@@ -2,7 +2,7 @@
 require File.dirname(__FILE__) + "/lib/pwsqr"
 
 Gem::Specification.new do |s|
-  s.required_ruby_version = '>= 1.9.3'
+  s.platform    = Gem::Platform::RUBY
   s.name        = PwsQrEnv::NAME
   s.version     = PwsQrEnv::VERSION
   s.authors     = ["Serge Bedzhyk"]
@@ -12,8 +12,10 @@ Gem::Specification.new do |s|
   s.description = "Simple QR interface to pws gem. Helps to use your passwords on a smartphone."
   s.files = Dir.glob(%w[{lib,test}/**/*.rb bin/*]) + %w{Rakefile pws.gemspec}
   s.extra_rdoc_files = ["README.md", "LICENSE", "contributing.md"]
-  s.license = 'MIT'
   s.executables = [PwsQrEnv::NAME]
+
+  s.required_ruby_version = '>= 1.9.3'
+  s.license = 'MIT'
 
   s.add_dependency 'clipboard', '~> 1.0.5'
   s.add_dependency 'pws'

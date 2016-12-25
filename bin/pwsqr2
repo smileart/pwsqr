@@ -23,7 +23,7 @@ class PwsQR
     ======================================================
 
     Usage:
-      #{PwsQrEnv::NAME} [--offline| --email <email>] [--namespace <namespace>] <key>
+      #{PwsQrEnv::NAME} [--offline | --email] [--namespace <namespace>] <key>
       #{PwsQrEnv::NAME} --version
       #{PwsQrEnv::NAME} --help
       #{PwsQrEnv::NAME} --init
@@ -34,7 +34,7 @@ class PwsQR
       --init                                     Initialise new configuration
       --namespace <namespace>, -n <namespace>    Use custom pws namespace
       --offline, -o                              Force local password usage (disable OneTimeSecret if configured)
-      --email <email>, -e <email>                Generate OneTimeSecret URL and send it to someones
+      --email, -e                                Send a friendly email containing the secret link
   DOC
 
   CONFIG_PATH = "#{Dir.home}/.#{PwsQrEnv::NAME}".freeze
@@ -142,12 +142,11 @@ class PwsQR
   end
 
   def shorten_url(url)
-    @config[:url_shortening][:url] = 'http://localhost:3333/--?url='
     open(@config[:url_shortening][:url]+url).read
   end
 
   def pws_offline
-    puts 'PWSQR works offline!'.red
+    puts 'PWSQR works offline!'.yellow
     exit unless system(@pws_command)
     print generate_qr(Clipboard.paste)
 
@@ -158,11 +157,10 @@ class PwsQR
     puts 'PWSQR works online!'.green
     exit unless system(@pws_command)
 
-    # @TODO Handle all the API/networking errors
     onetime_api = Onetime::API.new @config[:onetime][:email], @config[:onetime][:api_key]
 
     options = { :secret => Clipboard.paste, :ttl => 7200 }
-    options[:recipient] = @config[:onetime][:email] if @config[:onetime][:email]
+    options[:recipient] = @config[:onetime][:email] if @config[:onetime][:email] && @docopt['--email']
 
     secret = onetime_api.post '/share', options
 

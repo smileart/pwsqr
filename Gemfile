@@ -14,4 +14,5 @@ group :development do
   gem 'letters'
   gem 'byebug'
   gem 'gitignore'
+  gem 'rubocop'
 end
