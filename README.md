@@ -1,3 +1,5 @@
+![PWSQR](./img/pwsqr.png)
+
 # pwsqr [![Gem](https://img.shields.io/gem/v/formatador.svg)](https://rubygems.org/gems/pwsqr)
 
 > Simple QR interface to pws gem. Helps to use your passwords on a smartphone.
