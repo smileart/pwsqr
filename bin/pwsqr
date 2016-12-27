@@ -51,13 +51,13 @@ class PwsQR
     In order to use pwsqr online, please create your account here: #{ONETIME_SIGNUP_URL}
     and setup your settings in #{CONFIG_PATH.yellow} config file. Thanks! >^.^<
 
-    If you really wanted to use it offline — run the command with `--offline` flag!
+    If you actually wanted to use it offline — run the command with `--offline` flag!
   INITDOC
 
   CONFIG_DEFAULTS = {
     onetime: {
       email: nil,
-      api_key: nil
+      api_key: '< PLEASE VISIT https://onetimesecret.com/account TO GET YOUR KEY! >'
     },
     url_shortening: {
       url: 'https://clck.ru/--?url='
