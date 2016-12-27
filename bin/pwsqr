@@ -65,9 +65,9 @@ class PwsQR
   }.freeze
 
   ERROR_MESSAGES = {
-    onetime_wrong_response: 'One-Time Secret didn\'t respond properly!',
-    url_shortener_wrong_response: 'URL shortener didn\'t respond properly!',
-    network_error: 'Network error occurred (probably there is no internet connection)!'
+    onetime_wrong_response: 'One-Time Secret didn\'t respond properly! Check your config, please.',
+    url_shortener_wrong_response: 'URL shortener didn\'t respond properly! Check your config, please.',
+    network_error: "Network error occurred\nProbably there is no internet connection or external service is down!"
   }.freeze
 
   def initialize(logger_class, logger_device, logger_level)
@@ -148,7 +148,7 @@ class PwsQR
 
   def shorten_url(url)
     url = open(@config[:url_shortening][:url] + url).read
-    url = !url.strip.empty? ? url : nil
+    url = !url.strip.empty? && url.length <= 25 ? url : nil
 
     url
   end
