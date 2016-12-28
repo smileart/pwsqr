@@ -79,7 +79,7 @@ class PwsQR
     @clipboard_backup = Clipboard.paste
 
     @docopt = Docopt.docopt(DOCOPT)
-    @docopt['--namespace'] = @docopt['--namespace'] ? "-#{@docopt['--namespace']}" : ''
+    @docopt['--namespace'] = @docopt['--namespace'] ? "-'#{@docopt['--namespace']}'" : ''
     @pws_command = "pws #{@docopt['--namespace']} get #{@docopt['<key>']} 0"
 
     load_config
