@@ -39,3 +39,4 @@ See [contributing.md](./contributing.md)
 ## License
 
 [MIT](./LICENSE) © 2012 - 2016 [Serge Bedzhyk](https://github.com/smileart)
+Image font source: [3Dventure](http://www.dafont.com/3dventure.font)
