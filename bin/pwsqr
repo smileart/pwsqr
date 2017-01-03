@@ -37,11 +37,11 @@ class PwsQR
 
     Options:
       --version, -v                              Show the current app version
-      --help, -h                                 Show this screen
-      --init                                     Initialise new configuration
+      --help, -h                                 Show this message
+      --init                                     Initialise new configuration (won't break the old one)
       --namespace <namespace>, -n <namespace>    Use custom pws namespace
-      --offline, -o                              Force local password usage (disable OneTimeSecret if configured,
-                                                 mind the length of the password)
+      --offline, -o                              Force local password usage (force offline usage,
+                                                 mind the length of the password and terminal history)
       --email, -e                                Send a friendly email containing the secret link
   DOC
 
@@ -54,10 +54,12 @@ class PwsQR
     If you actually wanted to use it offline — run the command with `--offline` flag!
   INITDOC
 
+  API_KEY_PLACEHOLDER = '< PLEASE VISIT https://onetimesecret.com/account TO GET YOUR KEY! >'
+
   CONFIG_DEFAULTS = {
     onetime: {
       email: nil,
-      api_key: '< PLEASE VISIT https://onetimesecret.com/account TO GET YOUR KEY! >'
+      api_key: API_KEY_PLACEHOLDER
     },
     url_shortening: {
       url: 'https://clck.ru/--?url='
@@ -67,7 +69,8 @@ class PwsQR
   ERROR_MESSAGES = {
     onetime_wrong_response: 'One-Time Secret didn\'t respond properly! Check your config, please.',
     url_shortener_wrong_response: 'URL shortener didn\'t respond properly! Check your config, please.',
-    network_error: "Network error occurred\nProbably there is no internet connection or external service is down!"
+    network_error: "Network error occurred\nProbably there is no internet connection or external service is down!",
+    config_error: "PWSQR can't work online unless you properly configure it.\nTry to run it with `--init` flag or use `--offline`"
   }.freeze
 
   def initialize(logger_class, logger_device, logger_level)
@@ -100,10 +103,14 @@ class PwsQR
   end
 
   def pwsqr
-    if !config? || @docopt['--offline']
+    if @docopt['--offline']
       pws_offline
     else
-      pws_online
+      if config?
+        pws_online
+      else
+        raise ConfigError
+      end
     end
   end
 
@@ -134,6 +141,7 @@ class PwsQR
     @config &&
       onetime_conf[:email] &&
       onetime_conf[:api_key] &&
+      onetime_conf[:api_key] != API_KEY_PLACEHOLDER &&
       !@config[:url_shortening][:url].empty?
   end
 
@@ -182,15 +190,16 @@ class PwsQR
     pws
 
     secret = onetime
-    raise OneTimeError, ERROR_MESSAGES[:onetime_wrong_response] unless secret['secret_key']
+    raise OneTimeError unless secret['secret_key']
 
     short_url = shorten_url onetime_url secret['secret_key']
-    raise UrlShorteningError, ERROR_MESSAGES[:url_shortener_wrong_response] unless short_url
+    raise UrlShorteningError unless short_url
 
     generate_qr(short_url)
   end
 end
 
+class ConfigError < StandardError; end
 class OneTimeError < StandardError; end
 class UrlShorteningError < StandardError; end
 
@@ -207,6 +216,8 @@ rescue Net::ReadTimeout, OpenURI::HTTPError, SocketError
   app.error PwsQR::ERROR_MESSAGES[:network_error]
 rescue JSON::ParserError
   app.error PwsQR::ERROR_MESSAGES[:onetime_wrong_response]
+rescue ConfigError
+  app.error PwsQR::ERROR_MESSAGES[:config_error]
 rescue UrlShorteningError
   app.error PwsQR::ERROR_MESSAGES[:url_shortener_wrong_response]
 rescue OneTimeError => e
