@@ -221,7 +221,7 @@ rescue ConfigError
 rescue UrlShorteningError
   app.error PwsQR::ERROR_MESSAGES[:url_shortener_wrong_response]
 rescue OneTimeError => e
-  app.error e.message
+  app.error PwsQR::ERROR_MESSAGES[:onetime_wrong_response]
 rescue Docopt::Exit => e
   puts e.message
   puts
