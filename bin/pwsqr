@@ -136,13 +136,18 @@ class PwsQR
   end
 
   def config?
+    return false unless @config && @config[:onetime] && @config[:url_shortening]
+
     onetime_conf = @config[:onetime]
+    url_short_conf = @config[:url_shortening]
 
     @config &&
       onetime_conf[:email] &&
       onetime_conf[:api_key] &&
       onetime_conf[:api_key] != API_KEY_PLACEHOLDER &&
-      !@config[:url_shortening][:url].empty?
+      url_short_conf &&
+      url_short_conf[:url] &&
+      !url_short_conf[:url].empty?
   end
 
   def generate_qr(str)
