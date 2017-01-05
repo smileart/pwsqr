@@ -7,6 +7,7 @@ require 'logger'
 require 'open3'
 require 'colorize'
 require 'open-uri'
+require 'rqrcode'
 require 'onetime/api'
 
 require_relative '../lib/pwsqr.rb'
@@ -150,12 +151,22 @@ class PwsQR
       !url_short_conf[:url].empty?
   end
 
+  def qrcode_factory(str, config={})
+    begin
+      return RQRCode::QRCode.new(str, config)
+    rescue RQRCode::QRCodeRunTimeError => e
+      config[:size] += 1
+      raise e if config[:size] > 20
+      retry
+    end
+  end
+
   def generate_qr(str)
-    result = nil
+    qrcode = qrcode_factory(str, size: 1, level: :l)
 
-    Open3.popen3('qrcli', str) { |_i, output, _e, _t| result = output.read }
-
-    print result
+    print qrcode.as_ansi(light: "\e[107m", dark: "\e[40m",
+                    fill_character: '  ',
+                    quiet_zone_size: 1)
     exit
   end
 

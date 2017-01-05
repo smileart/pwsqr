@@ -2,7 +2,7 @@ source 'http://rubygems.org'
 
 gem 'pws'
 gem 'clipboard'
-gem 'qrcli'
+gem 'rqrcode', '>= 0.10.1'
 gem 'onetime'
 gem 'docopt'
 gem 'colorize'

@@ -53,8 +53,6 @@ GEM
       clipboard (~> 1.0.5)
       paint (>= 0.8.7)
       pbkdf2-ruby
-    qrcli (0.0.1)
-      rqrcode
     rainbow (2.1.0)
     rake (12.0.0)
     reek (4.5.3)
@@ -99,9 +97,9 @@ DEPENDENCIES
   letters
   onetime
   pws
-  qrcli
   rake
   reek
+  rqrcode (> 0.10)
   rubocop
   simplecov
 
