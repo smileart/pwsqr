@@ -12,10 +12,8 @@ require 'onetime/api'
 
 require_relative '../lib/pwsqr.rb'
 
-# 🚧 🚧 🚧 🚧 🚧 🚧 🚧 🚧 🚧 ☢️ UNDER CONSTRUCTION! ☢️ 🚧 🚧 🚧 🚧 🚧 🚧 🚧 🚧 🚧
-
 # Public: main CLI interface class
-# Process args, executes external binaries
+# Process args, executes external binaries (e.g. pws)
 class PwsQR
   attr_reader :clipboard_backup
 
