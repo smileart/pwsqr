@@ -1,6 +1,6 @@
 ![PWSQR](./img/pwsqr.png)
 
-# pwsqr [![Gem](https://img.shields.io/gem/v/pwsqr.svg)](https://rubygems.org/gems/pwsqr) ⚠️ Current brunch is under development
+# pwsqr [![Gem](https://img.shields.io/gem/v/pwsqr.svg)](https://rubygems.org/gems/pwsqr)
 
 > Simple QR interface to pws gem. Helps to use your passwords on a smartphone.
 
@@ -18,7 +18,9 @@ This gem helps you securely and easily copy/send passwords from CLI (`pws` tool)
 
 When `pwsqr` works online it tries to use [onetimesecret.com](https://onetimesecret.com) service to store your password privately behind the QR code with a short URL.
 
-To use this feature, run pwsqr with `pwsqr init` command first and setup your email address and API key in the newly generated config file in your `$HOME` directory: `~/.pwsqr`
+To use this feature, run pwsqr with `pwsqr --init` command first and setup your email address and API key in the newly generated config file in your `$HOME` directory: `~/.pwsqr`
+
+If you want to generate config file from scratch delete the old one before running `pwsqr --init`
 
 ```
 $ pwsqr --help
@@ -42,6 +44,18 @@ $ pwsqr --help
       --offline, -o                              Force local password usage (force offline usage,
                                                  mind the length of the password and terminal history)
       --email, -e                                Send a friendly email containing the secret link
+```
+
+```sh
+# Home
+$ pwsqr twitter # get twitter password (online/QR)
+$ pwsqr -e twitter # get twitter password (online/email)
+$ pwsqr -o twitter # get twitter password (offline/QR)
+
+# Work
+$ pwsqr -n work -o github # get github password (offline/work namespace/QR)
+$ pwsqr -n work github # get github password (online/work namespace/QR)
+$ pwsqr -n work -e github # get github password (online/work namespace/email)
 ```
 
 Then you check your email (if you used `--email` / `-e` flag) or scan QR-code with any QR scanner (I use really fast one: [Optiscan QR Code Reader](https://itunes.apple.com/us/app/optiscan-qr-code-scanner-generator/id304099767) ⚠️ **this is not an advert**)

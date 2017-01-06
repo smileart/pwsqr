@@ -1,7 +1,7 @@
 GEM
   remote: http://rubygems.org/
   specs:
-    activesupport (5.0.0.1)
+    activesupport (5.0.1)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (~> 0.7)
       minitest (~> 5.1)
@@ -20,7 +20,7 @@ GEM
     coercible (1.0.0)
       descendants_tracker (~> 0.0.1)
     colorize (0.8.1)
-    concurrent-ruby (1.0.3)
+    concurrent-ruby (1.0.4)
     descendants_tracker (0.0.4)
       thread_safe (~> 0.3, >= 0.3.1)
     docile (1.1.5)
@@ -44,7 +44,7 @@ GEM
       drydock (>= 0.6.9)
       httparty (>= 0.7.7)
       json (>= 1.6.8)
-    paint (1.0.1)
+    paint (2.0.0)
     parser (2.3.3.1)
       ast (~> 2.2)
     pbkdf2-ruby (0.2.1)
@@ -53,7 +53,7 @@ GEM
       clipboard (~> 1.0.5)
       paint (>= 0.8.7)
       pbkdf2-ruby
-    rainbow (2.1.0)
+    rainbow (2.2.1)
     rake (12.0.0)
     reek (4.5.3)
       codeclimate-engine-rb (~> 0.4.0)
@@ -88,20 +88,20 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  bundler
-  byebug
-  clipboard
-  colorize
-  docopt
-  gitignore
-  letters
-  onetime
-  pws
-  rake
-  reek
-  rqrcode (> 0.10)
-  rubocop
-  simplecov
+  bundler (~> 1.13)
+  byebug (~> 9.0)
+  clipboard (~> 1.0)
+  colorize (~> 0.8)
+  docopt (~> 0.5)
+  gitignore (~> 0.1)
+  letters (~> 0.4)
+  onetime (~> 0.5)
+  pws (~> 1.0)
+  rake (~> 12.0)
+  reek (~> 4.5)
+  rqrcode (~> 0.10)
+  rubocop (~> 0.46)
+  simplecov (~> 0.10)
 
 BUNDLED WITH
-   1.13.6
+   1.13.7
